@@ -41,6 +41,8 @@ const db = {
   }
 };
 
+app.get("/", (req, res) => res.send("hello world"));
+
 app.post("/user/Register", (req, res, next) => {
   try {
     const users = db.read_users();
