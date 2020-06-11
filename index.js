@@ -1,3 +1,4 @@
+const _ = require("lodash");
 //#region express configures
 var express = require("express");
 var logger = require("morgan");
@@ -28,7 +29,7 @@ app.use(
 var port = process.env.PORT || "3000";
 //#endregion
 
-const db = {
+const utils = {
   read_users: function () {
     const data = fs.readFileSync(path.join(__dirname, "/db.json"));
     return JSON.parse(data).users;
@@ -38,6 +39,10 @@ const db = {
     data = JSON.parse(data);
     data.users.push(user);
     fs.writeFileSync(path.join(__dirname, "/db.json"), JSON.stringify(data));
+  },
+  read_recipes: function () {
+    const data = fs.readFileSync(path.join(__dirname, "/recipes.json"));
+    return JSON.parse(data);
   }
 };
 
@@ -45,9 +50,9 @@ app.get("/", (req, res) => res.send("hello world"));
 
 app.post("/user/Register", (req, res, next) => {
   try {
-    const users = db.read_users();
+    const users = utils.read_users();
     if (users.find((x) => x.username === req.body.username))
-      throw {status:400, message:"Name exists"};
+      throw { status: 400, message: "Name exists" };
     var newUser = { id: users.length, ...req.body };
     db.write_user(newUser);
     res.status(201).send({ message: "user created", success: true });
@@ -57,15 +62,32 @@ app.post("/user/Register", (req, res, next) => {
 });
 app.post("/user/Login", (req, res, next) => {
   try {
-    const users = db.read_users();
+    const users = utils.read_users();
     const user = users.find((x) => x.name === req.body.name);
-    if (!user) throw { status:401, message:"password or Name is not correct"};
+    if (!user)
+      throw { status: 401, message: "password or Name is not correct" };
     if (req.body.password !== user.password) {
-      throw { status:401, message:"password or Name is not correct"};
+      throw { status: 401, message: "password or Name is not correct" };
     }
 
     req.session.user_id = user.id;
-    res.status(200).send({message:"login succeeded", success:true});
+    res.status(200).send({ message: "login succeeded", success: true });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/recipes/random", (req, res, next) => {
+  try {
+    const recipes = utils.read_recipes();
+    const random_recipes = _.sampleSize(recipes, 3);
+    res
+      .status(200)
+      .send({
+        message: "login succeeded",
+        success: true,
+        recipes: random_recipes
+      });
   } catch (error) {
     next(error);
   }
