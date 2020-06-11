@@ -11,6 +11,7 @@ var app = express();
 app.use(logger("dev")); //logger
 app.use(express.json()); // parse application/json
 app.use(cors());
+app.options("*", cors());
 // app.use(
 //   cors({
 //     origin: "http://127.0.0.1:5500"
