@@ -2,13 +2,14 @@ const express = require("express");
 const router = express.Router();
 const _ = require("lodash");
 const utils = require("../local/utils");
+console.log(utils);
 
 router.get("/random", (req, res, next) => {
   try {
     const recipes = utils.read_recipes();
     const random_recipes = _.sampleSize(recipes, 3);
     res.status(200).send({
-      message: "login succeeded",
+      message: "Function succeeded",
       success: true,
       recipes: random_recipes
     });
