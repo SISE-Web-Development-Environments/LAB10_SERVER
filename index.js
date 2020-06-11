@@ -43,6 +43,10 @@ const utils = {
   read_recipes: function () {
     const data = fs.readFileSync(path.join(__dirname, "/recipes.json"));
     return JSON.parse(data);
+  },
+  read_recipes_info: function () {
+    const data = fs.readFileSync(path.join(__dirname, "/recipesInfo.json"));
+    return JSON.parse(data);
   }
 };
 
@@ -85,6 +89,36 @@ app.get("/recipes/random", (req, res, next) => {
       message: "login succeeded",
       success: true,
       recipes: random_recipes
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/recipes/allId", async (req, res, next) => {
+  try {
+    let recipes = utils.read_recipes();
+    recipes = recipes.map((r) => r.id);
+
+    res.status(200).send({
+      message: "Function succeeded",
+      success: true,
+      recipes: recipes
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/recipes/info", async (req, res, next) => {
+  try {
+    const recipes = utils.read_recipes_info();
+    let recipe = recipes.find((r) => String(r.id) === String(req.query.id));
+
+    res.status(200).send({
+      message: "Function succeeded",
+      success: true,
+      recipe: recipe
     });
   } catch (error) {
     next(error);
