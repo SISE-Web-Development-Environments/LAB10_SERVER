@@ -65,7 +65,7 @@ app.post("/user/Login", (req, res, next) => {
     }
 
     req.session.user_id = user.id;
-    res.status(200).send("login succeeded");
+    res.status(200).send({message:"login succeeded", success:true});
   } catch (error) {
     next(error);
   }
