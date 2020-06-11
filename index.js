@@ -54,7 +54,7 @@ app.post("/user/Register", (req, res, next) => {
     if (users.find((x) => x.username === req.body.username))
       throw { status: 400, message: "Name exists" };
     var newUser = { id: users.length, ...req.body };
-    db.write_user(newUser);
+    utils.write_user(newUser);
     res.status(201).send({ message: "user created", success: true });
   } catch (error) {
     next(error);
@@ -81,13 +81,11 @@ app.get("/recipes/random", (req, res, next) => {
   try {
     const recipes = utils.read_recipes();
     const random_recipes = _.sampleSize(recipes, 3);
-    res
-      .status(200)
-      .send({
-        message: "login succeeded",
-        success: true,
-        recipes: random_recipes
-      });
+    res.status(200).send({
+      message: "login succeeded",
+      success: true,
+      recipes: random_recipes
+    });
   } catch (error) {
     next(error);
   }
