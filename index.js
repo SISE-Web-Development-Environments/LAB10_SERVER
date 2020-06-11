@@ -47,7 +47,7 @@ app.post("/user/Register", (req, res, next) => {
   try {
     const users = db.read_users();
     if (users.find((x) => x.username === req.body.username))
-      throw new Error("Name exists");
+      throw {status:400, message:"Name exists"};
     var newUser = { id: users.length, ...req.body };
     db.write_user(newUser);
     res.status(201).send({ message: "user created", success: true });
@@ -59,9 +59,9 @@ app.post("/user/Login", (req, res, next) => {
   try {
     const users = db.read_users();
     const user = users.find((x) => x.name === req.body.name);
-    if (!user) throw new Error("password or Name is not correct");
+    if (!user) throw { status:401, message:"password or Name is not correct"};
     if (req.body.password !== user.password) {
-      throw new Error("password or Name is not correct");
+      throw { status:401, message:"password or Name is not correct"};
     }
 
     req.session.user_id = user.id;
