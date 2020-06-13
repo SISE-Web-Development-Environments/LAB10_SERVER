@@ -37,7 +37,7 @@ router.get("/info", async (req, res, next) => {
   try {
     const recipes = utils.read_recipes_info();
     let recipe = recipes.find((r) => String(r.id) === String(req.query.id));
-
+    if (recipe === undefined) throw new Error("recipe not found");
     res.status(200).send({
       message: "Function succeeded",
       success: true,
