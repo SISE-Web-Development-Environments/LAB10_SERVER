@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const _ = require("lodash");
 const utils = require("../local/utils");
-console.log(utils);
 
 router.get("/random", (req, res, next) => {
   try {

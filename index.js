@@ -28,29 +28,48 @@ var port = process.env.PORT || "3000";
 //#endregion
 
 //#region cookie middleware
-app.use(function (req, res, next) {
+// app.use(function (req, res, next) {
+//   if (req.session && req.session.user_id) {
+//     DButils.execQuery("SELECT user_id FROM users")
+//       .then((users) => {
+//         if (users.find((x) => x.user_id === req.session.user_id)) {
+//           req.user_id = req.session.user_id;
+//         }
+//         next();
+//       })
+//       .catch((error) => next());
+//   } else {
+//     next();
+//   }
+// });
+const DButils = require("./DButils");
+function auth(req, res, next) {
   if (req.session && req.session.user_id) {
     DButils.execQuery("SELECT user_id FROM users")
       .then((users) => {
         if (users.find((x) => x.user_id === req.session.user_id)) {
           req.user_id = req.session.user_id;
-        }
-        next();
+          next();
+        } else throw { status: 401, message: "unauthorized" };
       })
-      .catch((error) => next());
+      .catch((error) => {
+        throw { status: 401, message: "unauthorized" };
+      });
   } else {
-    next();
+    throw { status: 401, message: "unauthorized" };
   }
-});
+}
 //#endregion
 
 app.get("/", (req, res) => res.send("hello world"));
 
 const user = require("./routes/user");
 const recipes = require("./routes/recipes");
+const profile = require("./routes/profile");
 
 app.use("/user", user);
 app.use("/recipes", recipes);
+app.use("/profile", auth, profile);
 
 // app.post("/user/Register", (req, res, next) => {
 //   try {
