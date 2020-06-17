@@ -7,8 +7,13 @@ var cors = require("cors");
 var app = express();
 app.use(logger("dev")); //logger
 app.use(express.json()); // parse application/json
-app.use(cors());
-app.options("*", cors());
+const corsConfig = {
+  origin: true,
+  credentials: true
+};
+
+app.use(cors(corsConfig));
+app.options("*", cors(corsConfig));
 // app.use(
 //   cors({
 //     origin: "http://127.0.0.1:5500"
